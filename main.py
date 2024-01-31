@@ -1,8 +1,9 @@
 import telebot
 import psycopg2
 import requests
+import os
 
-bot = telebot.TeleBot('TOP_SECRET')
+bot = telebot.TeleBot(os.environ.get('SECRET'))
 
 conn = psycopg2.connect(dbname='playground', user='postgres', password='postgres', host='localhost')
 cur = conn.cursor()
@@ -26,12 +27,6 @@ def is_valid_url(url):
 def is_valid_youtube(url):
     return url.startswith('https://www.youtube.com/watch?v=')
 
-unit_to_multiplier = {
-    1: 10**-3,
-    2: 10**-2,
-    3: 10**-1,
-}
-
 @bot.message_handler(content_types=['text', 'photo'])
 def handle_message(message):
     if message.content_type == 'text':
@@ -47,7 +42,8 @@ def handle_message(message):
                 bot.send_message(message.chat.id, 'Извините, я не нашел такой файл в базе данных.')
         elif len(map) == 4:
             file_name, image, pdf_link, video_link = map[0], map[1], map[3], map[2] #  message.photo[-1].file_id
-            if file_name and not cur.execute('SELECT 1 FROM files WHERE file_name = %s', (file_name,)):
+            cur.execute('SELECT 1 FROM files WHERE file_name = %s', (file_name,))
+            if file_name and not cur.fetchone():
                 if 'pdf' in pdf_link and is_valid_url(pdf_link) and is_valid_url(video_link):
                     cur.execute('INSERT INTO files VALUES (%s, %s, %s, %s)', (file_name, image, pdf_link, video_link))
                     conn.commit()
