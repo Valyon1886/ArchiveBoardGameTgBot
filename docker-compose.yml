@@ -16,7 +16,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - SECRET=6724873005:AAHDEyQgSZ9X7YtaivKCUCqzf_D-UyFm6Ac
+      - SECRET=your_secret
     volumes:
       - .:/app
     depends_on:
