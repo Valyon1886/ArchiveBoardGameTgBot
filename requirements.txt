@@ -1,0 +1,6 @@
+python-telegram-bot==13.7
+psycopg2==2.9.9
+requests==2.31.0
+telebot==0.0.5
+pyTelegramBotAPI==4.15.4
+urllib3==2.2.0

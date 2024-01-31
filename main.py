@@ -5,7 +5,7 @@ import os
 
 bot = telebot.TeleBot(os.environ.get('SECRET'))
 
-conn = psycopg2.connect(dbname='playground', user='postgres', password='postgres', host='localhost')
+conn = psycopg2.connect(dbname='playground', user='postgres', password='postgres', host='db')
 cur = conn.cursor()
 
 cur.execute('''
@@ -32,7 +32,7 @@ def handle_message(message):
     if message.content_type == 'text':
         map = message.text.split("\n\n")
         if len(map) == 1:
-            file_name = message.text
+            file_name = message.text.upper()
             cur.execute('SELECT * FROM files WHERE file_name = %s', (file_name,))
             result = cur.fetchone()
             if result:
@@ -41,7 +41,7 @@ def handle_message(message):
             else:
                 bot.send_message(message.chat.id, 'Извините, я не нашел такой файл в базе данных.')
         elif len(map) == 4:
-            file_name, image, pdf_link, video_link = map[0], map[1], map[3], map[2] #  message.photo[-1].file_id
+            file_name, image, pdf_link, video_link = map[0].upper(), map[1], map[3], map[2] #  message.photo[-1].file_id
             cur.execute('SELECT 1 FROM files WHERE file_name = %s', (file_name,))
             if file_name and not cur.fetchone():
                 if 'pdf' in pdf_link and is_valid_url(pdf_link) and is_valid_url(video_link):

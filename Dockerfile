@@ -3,13 +3,14 @@ FROM python:3.12
 # Установка зависимостей проекта
 COPY requirements.txt /app/requirements.txt
 
-ENV SECRET=''
+WORKDIR /app
 
-RUN pip install --no-cache-dir -r /app/requirements.txt
+ENV SECRET='your_secret'
+
+RUN pip install -r requirements.txt
 
 # Копирование файлов проекта
-COPY . /app
-WORKDIR /app
+COPY . .
 
 # Запуск скрипта
 CMD python main.py
